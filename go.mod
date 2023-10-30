@@ -1,3 +1,3 @@
-module gopkg.daemonl.com/envconf
+module github.com/pentops/envconf
 
-go 1.18
+go 1.20

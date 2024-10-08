@@ -102,9 +102,16 @@ func (p Parser) Parse(dest interface{}) error {
 	rt := reflect.TypeOf(dest).Elem()
 	rv := reflect.ValueOf(dest).Elem()
 	for i := 0; i < rv.NumField(); i++ {
-		tag := rt.Field(i).Tag
+		fieldType := rt.Field(i)
+		tag := fieldType.Tag
 		envName := tag.Get("env")
 		if envName == "" {
+			if fieldType.Anonymous && fieldType.Type.Kind() == reflect.Struct {
+				if err := p.Parse(rv.Field(i).Addr().Interface()); err != nil {
+					return err
+				}
+			}
+
 			continue
 		}
 		envVal := os.Getenv(envName)
